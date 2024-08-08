@@ -164,7 +164,4 @@ cython_debug/
 *.xlsx
 
 =======
-venv/
-weatherfiles/
-*.txt
 >>>>>>> fbce708 (REFACTOR: Refactor code into modules)
