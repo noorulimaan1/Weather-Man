@@ -1,8 +1,7 @@
 import sys
 from file_reader import FileReader
-from stats import WeatherStats
 from weather import WeatherData
-
+from stats import WeatherStats
 
 class WeatherMan:
     def __init__(self, directory):
@@ -16,9 +15,8 @@ class WeatherMan:
             raw_data = self.file_reader.read_weather_file(file)
             for row in raw_data:
                 weather_data.append(WeatherData.from_csv_row(row))
-
-        highest_temp, highest_temp_day, lowest_temp, lowest_temp_day, most_humid_day, most_humid_day_date = WeatherStats.find_extremes(
-            weather_data)
+        
+        highest_temp, highest_temp_day, lowest_temp, lowest_temp_day, most_humid_day, most_humid_day_date = WeatherStats.find_extremes(weather_data)
 
         print(f"Highest: {highest_temp}C on {highest_temp_day}")
         print(f"Lowest: {lowest_temp}C on {lowest_temp_day}")
@@ -29,16 +27,29 @@ class WeatherMan:
         if not file:
             print(f"No data available for {year}/{month}")
             return
-
+        
         raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
-
-        avg_high_temp, avg_low_temp, avg_mean_humidity = WeatherStats.calculate_averages(
-            weather_data)
-
+        
+        avg_high_temp, avg_low_temp, avg_mean_humidity = WeatherStats.calculate_averages(weather_data)
+        
         print(f"Average Highest Temperature: {avg_high_temp}C")
         print(f"Average Lowest Temperature: {avg_low_temp}C")
         print(f"Average Mean Humidity: {avg_mean_humidity}%")
+
+    def draw_bars(self, year, month):
+        file = self.file_reader.get_file_for_month(year, month)
+        if not file:
+            print(f"No data available for {year}/{month}")
+            return
+        
+        raw_data = self.file_reader.read_weather_file(file)
+        weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
+        
+        WeatherStats.find_daily_extremes(weather_data)
+
+
+
 
 
 if __name__ == "__main__":
@@ -52,5 +63,8 @@ if __name__ == "__main__":
     elif option == "-a":
         year, month = sys.argv[3].split('/')
         weather_man.process_month(year, month)
+    elif option == "-c":
+        year, month = sys.argv[3].split('/')
+        weather_man.draw_bars(year, month)
     else:
         print("Invalid option")

@@ -46,3 +46,12 @@ class WeatherStats:
         return (total_max_temp // count,
                 total_min_temp // count,
                 total_mean_humidity // count)
+
+    @staticmethod
+    def find_daily_extremes(weather_data):
+        for data in weather_data:
+            if data.max_temp is not None:
+                print(f"{data.date} Highest: {'+'*data.max_temp} {data.max_temp}")
+            if data.min_temp is not None:
+                print(f"{data.date} Lowest: {'+'*data.min_temp} {data.min_temp}")
+

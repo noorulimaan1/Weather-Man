@@ -1,6 +1,5 @@
 import os
 
-
 class FileReader:
     def __init__(self, directory):
         self.directory = directory
@@ -8,7 +7,7 @@ class FileReader:
     def read_weather_file(self, filepath):
         weather_data = []
         with open(filepath, 'r') as file:
-            lines = file.readlines()[1:]  
+            lines = file.readlines()[1:]  # Skip the header line
             for line in lines:
                 weather_data.append(line.strip().split(','))
         return weather_data
