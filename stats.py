@@ -1,3 +1,6 @@
+from colorama import Fore, Back, Style
+
+
 class WeatherStats:
     @staticmethod
     def find_extremes(weather_data):
@@ -51,7 +54,6 @@ class WeatherStats:
     def find_daily_extremes(weather_data):
         for data in weather_data:
             if data.max_temp is not None:
-                print(f"{data.date} Highest: {'+'*data.max_temp} {data.max_temp}")
+                print(f"{data.date} {Fore.RED + '+' * data.max_temp + Fore.RESET} {data.max_temp}C")
             if data.min_temp is not None:
-                print(f"{data.date} Lowest: {'+'*data.min_temp} {data.min_temp}")
-
+                print(f"{data.date} {Fore.BLUE + '+' * data.min_temp + Fore.RESET} {data.min_temp}C")
