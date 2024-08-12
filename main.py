@@ -1,4 +1,3 @@
-import sys
 import argparse
 from file_reader import FileReader
 from stats import WeatherStats
@@ -21,7 +20,7 @@ class WeatherMan:
         """
         self.file_reader = FileReader(directory)
 
-    def process_year(self, year):
+    def process_yearly_weather(self, year):
         """
         Processes weather data for a specific year and prints the highest temperature,
         lowest temperature, and most humid day.
@@ -33,7 +32,7 @@ class WeatherMan:
         weather_data = []
 
         for file in files:
-            header, raw_data = self.file_reader.read_weather_file(file)
+            raw_data = self.file_reader.read_weather_file(file)
             for row in raw_data:
                 weather_data.append(WeatherData.from_csv_row(row))
 
@@ -47,7 +46,7 @@ class WeatherMan:
         print(f"Humidity: {most_humid_day}% on {most_humid_day_date}")
 
 
-    def process_month(self, year, month):
+    def process_monthly_weather(self, year, month):
         """
         Processes weather data for a specific month and prints the average highest temperature,
         average lowest temperature, and average mean humidity.
@@ -61,7 +60,7 @@ class WeatherMan:
             print(f"No data available for {year}/{month}")
             return
 
-        header, raw_data = self.file_reader.read_weather_file(file)
+        raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
 
         avg_high_temp, avg_low_temp, avg_mean_humidity = WeatherStats.calculate_averages(weather_data)
@@ -103,9 +102,9 @@ if __name__ == "__main__":
     weather_man = WeatherMan(args.directory)
 
     if args.extremes:
-        weather_man.process_year(args.extremes)
+        weather_man.process_yearly_weather(args.extremes)
     elif args.averages:
         year, month = args.averages.split('/')
-        weather_man.process_month(year, month)
+        weather_man.process_monthly_weather(year, month)
     else:
         parser.print_help()

@@ -1,3 +1,4 @@
+# weather.py
 class WeatherData:
     """
     A class to represent weather data for a specific date.
@@ -17,21 +18,21 @@ class WeatherData:
     @staticmethod
     def from_csv_row(row):
         """
-        Creates a WeatherData instance from a CSV row.
+        Creates a WeatherData instance from a dictionary representing a CSV row.
 
         Parameters:
-            row (list): A list of values from a CSV row.
+            row (dict): A dictionary where the keys are header names.
 
         Returns:
             WeatherData: An instance of WeatherData, or None if the row is invalid.
         """
-        if row[0] == 'Date' or not row:
+        if row.get('Date') == 'Date' or not row:
             return None
         
-        date = row[0]
-        max_temp = row[1]
-        min_temp = row[3]
-        mean_humidity = row[7]
+        date = row.get('PKT')
+        max_temp = row.get('Max TemperatureC')
+        min_temp = row.get('Min TemperatureC')
+        mean_humidity = row.get(' Mean Humidity')
 
         try:
             return WeatherData(date, max_temp, min_temp, mean_humidity)

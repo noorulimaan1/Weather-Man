@@ -1,7 +1,8 @@
+from weather import WeatherData
+
 class WeatherStats:
     """
     A class to calculate statistics from weather data.
-
     Methods:
         find_extremes(weather_data): Finds the highest temperature, lowest temperature, and most humid day.
         calculate_averages(weather_data): Calculates the average highest temperature, lowest temperature, and mean humidity.
@@ -18,37 +19,32 @@ class WeatherStats:
             tuple: A tuple containing the highest temperature, highest temperature day,
                    lowest temperature, lowest temperature day, most humid day, and most humid day date.
         """
-        highest_temp = None
-        lowest_temp = None
-        most_humid_day = None
-        highest_temp_day = ""
-        lowest_temp_day = ""
-        most_humid_day_date = ""
+        extremes = {
+            "highest_temp": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None),
+            "lowest_temp": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None),
+            "most_humid": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None)
+        }
 
         for data in weather_data:
             if data.max_temp is not None:
-                if highest_temp is None or data.max_temp > highest_temp:
-                    highest_temp = data.max_temp
-                    highest_temp_day = data.date
+                if extremes["highest_temp"].max_temp is None or data.max_temp > extremes["highest_temp"].max_temp:
+                    extremes["highest_temp"] = data
 
             if data.min_temp is not None:
-                if lowest_temp is None or data.min_temp < lowest_temp:
-                    lowest_temp = data.min_temp
-                    lowest_temp_day = data.date
+                if extremes["lowest_temp"].min_temp is None or data.min_temp < extremes["lowest_temp"].min_temp:
+                    extremes["lowest_temp"] = data
 
             if data.mean_humidity is not None:
-                if most_humid_day is None or data.mean_humidity > most_humid_day:
-                    most_humid_day = data.mean_humidity
-                    most_humid_day_date = data.date
+                if extremes["most_humid"].mean_humidity is None or data.mean_humidity > extremes["most_humid"].mean_humidity:
+                    extremes["most_humid"] = data
 
-        # Ensure all return values are present
         return (
-            highest_temp if highest_temp is not None else 'No Data',
-            highest_temp_day if highest_temp_day else 'No Data',
-            lowest_temp if lowest_temp is not None else 'No Data',
-            lowest_temp_day if lowest_temp_day else 'No Data',
-            most_humid_day if most_humid_day is not None else 'No Data',
-            most_humid_day_date if most_humid_day_date else 'No Data'
+            extremes["highest_temp"].max_temp if extremes["highest_temp"].max_temp is not None else 'No Data',
+            extremes["highest_temp"].date,
+            extremes["lowest_temp"].min_temp if extremes["lowest_temp"].min_temp is not None else 'No Data',
+            extremes["lowest_temp"].date,
+            extremes["most_humid"].mean_humidity if extremes["most_humid"].mean_humidity is not None else 'No Data',
+            extremes["most_humid"].date
         )
 
 

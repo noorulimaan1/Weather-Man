@@ -1,13 +1,5 @@
-"""
-This module contains the FileReader class for reading weather data from CSV files.
-
-The FileReader class includes methods for reading weather data files and retrieving
-files based on year and month.
-"""
-
 import os
 import csv
-
 
 class FileReader:
     """
@@ -28,22 +20,21 @@ class FileReader:
 
     def read_weather_file(self, filepath):
         """
-        Reads weather data from a CSV file. The first row is treated as a header.
+        Reads weather data from a CSV file into a list of dictionaries.
+        Each dictionary represents a row with header names as keys.
 
         Parameters:
             filepath (str): The path to the weather data file.
 
         Returns:
-            tuple: A tuple containing the header row and a list of data rows.
+            list: A list of dictionaries where each dictionary represents a row.
         """
         weather_data = []
-        header = []
         with open(filepath, "r") as file:
-            reader = csv.reader(file)
-            header = next(reader)  # Read the header row
+            reader = csv.DictReader(file)  # Read the file into a dictionary format
             for row in reader:
                 weather_data.append(row)
-        return header, weather_data
+        return weather_data
 
     def get_files_for_year(self, year):
         """
