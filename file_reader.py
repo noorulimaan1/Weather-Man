@@ -1,5 +1,6 @@
 import os
 import csv
+from constants import MONTH_NAME_MAPPING
 
 class FileReader:
     """
@@ -62,20 +63,7 @@ class FileReader:
         Returns:
             str: The path to the file for the specified year and month, or None if not found.
         """
-        month_name = {
-            "1": "Jan",
-            "2": "Feb",
-            "3": "Mar",
-            "4": "Apr",
-            "5": "May",
-            "6": "Jun",
-            "7": "Jul",
-            "8": "Aug",
-            "9": "Sep",
-            "10": "Oct",
-            "11": "Nov",
-            "12": "Dec",
-        }.get(month, "")
+        month_name = MONTH_NAME_MAPPING.get(month, "")
         if not month_name:
             return None
         for file in os.listdir(self.directory):
