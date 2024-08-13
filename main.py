@@ -1,7 +1,9 @@
 import argparse
+from datetime import datetime
 from file_reader import FileReader
 from stats import WeatherStats
 from weather import WeatherData
+
 
 class WeatherMan:
     """
@@ -20,7 +22,7 @@ class WeatherMan:
         """
         self.file_reader = FileReader(directory)
 
-    def process_yearly_weather(self, year):
+    def process_annual_weather_extremes(self, year):
         """
         Processes weather data for a specific year and prints the highest temperature,
         lowest temperature, and most humid day.
@@ -39,14 +41,20 @@ class WeatherMan:
         # Filter out None values that might have been returned by from_csv_row
         weather_data = [data for data in weather_data if data is not None]
 
-        highest_temp, highest_temp_day, lowest_temp, lowest_temp_day, most_humid_day, most_humid_day_date = WeatherStats.find_extremes(weather_data)
+        (
+            highest_temp,
+            highest_temp_day,
+            lowest_temp,
+            lowest_temp_day,
+            most_humid_day,
+            most_humid_day_date,
+        ) = WeatherStats.find_extremes(weather_data)
 
         print(f"Highest: {highest_temp}C on {highest_temp_day}")
         print(f"Lowest: {lowest_temp}C on {lowest_temp_day}")
         print(f"Humidity: {most_humid_day}% on {most_humid_day_date}")
 
-
-    def process_monthly_weather(self, year, month):
+    def process_monthly_weather_averages(self, year, month):
         """
         Processes weather data for a specific month and prints the average highest temperature,
         average lowest temperature, and average mean humidity.
@@ -63,48 +71,103 @@ class WeatherMan:
         raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
 
-        avg_high_temp, avg_low_temp, avg_mean_humidity = WeatherStats.calculate_averages(weather_data)
+        avg_high_temp, avg_low_temp, avg_mean_humidity = (
+            WeatherStats.calculate_averages(weather_data)
+        )
 
         print(f"Average Highest Temperature: {avg_high_temp}C")
         print(f"Average Lowest Temperature: {avg_low_temp}C")
         print(f"Average Mean Humidity: {avg_mean_humidity}%")
 
 
-
 def validate_year_month(value):
-    parts = value.split('/')
-    if len(parts) != 2:
-        raise argparse.ArgumentTypeError("Year/Month must be in the format YYYY/MM.")
+    """
+    Validates the format of the year/month input.
+
+    Parameters:
+        value (str): The year/month string in the format "YYYY/MM".
+
+    Returns:
+        str: The validated year/month string.
+
+    Raises:
+        argparse.ArgumentTypeError: If the input format or year/month is invalid.
+    """
     
-    year, month = parts
-    if not (year.isdigit() and len(year) == 4):
-        raise argparse.ArgumentTypeError("Year must be a four-digit number.")
-    
-    if not (month.isdigit() and 1 <= int(month) <= 12):
-        raise argparse.ArgumentTypeError("Month must be a number between 1 and 12.")
-    
+    try:
+        # Split the input into year and month
+        parts = value.split("/")
+        if len(parts) != 2:
+            raise argparse.ArgumentTypeError(
+                "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
+            )
+
+        year, month = parts
+
+        # Validate year
+        datetime(int(year), 1, 1)  # This checks if the year is valid
+
+        # Validate month
+        datetime(int(year), int(month), 1)  # This checks if the month is valid
+
+    except (ValueError, IndexError) as exc:
+        raise argparse.ArgumentTypeError(
+            "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
+        ) from exc
+
     return value
+
 
 def validate_year(value):
-    if not (value.isdigit() and len(value) == 4):
-        raise argparse.ArgumentTypeError("Year must be a four-digit number.")
-    
+    """
+    Validates that the input value is a valid year.
+
+    Parameters:
+        value (str): The year in the format "YYYY".
+
+    Returns:
+        str: The input value if it is valid.
+
+    Raises:
+        argparse.ArgumentTypeError: If the value is not a four-digit number or if it represents an invalid year.
+    """
+    try:
+        # Validate year
+        datetime(int(value), 1, 1)  # This checks if the year is valid
+    except (ValueError, IndexError) as exc:
+        raise argparse.ArgumentTypeError(
+            "Year must be a four-digit number within the range 0001-9999."
+        ) from exc
+
     return value
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process weather data.")
-    parser.add_argument('directory', type=str, help="Directory containing weather files")
-    parser.add_argument('-e', '--extremes', type=validate_year, help="Year for which to display extremes")
-    parser.add_argument('-a', '--averages', type=validate_year_month, help="Year/Month for which to display averages")
+    parser.add_argument(
+        "directory", type=str, help="Directory containing weather files"
+    )
+    parser.add_argument(
+        "-e",
+        "--extremes",
+        type=validate_year,
+        help="Year for which to display extremes",
+    )
+    parser.add_argument(
+        "-a",
+        "--averages",
+        type=validate_year_month,
+        help="Year/Month for which to display averages",
+    )
 
     args = parser.parse_args()
 
     weather_man = WeatherMan(args.directory)
 
     if args.extremes:
-        weather_man.process_yearly_weather(args.extremes)
+        weather_man.process_annual_weather_extremes(args.extremes)
     elif args.averages:
-        year, month = args.averages.split('/')
-        weather_man.process_monthly_weather(year, month)
+        year, month = args.averages.split("/")
+        weather_man.process_monthly_weather_averages(year, month)
     else:
         parser.print_help()
