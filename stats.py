@@ -1,5 +1,6 @@
 from weather import WeatherData
 
+
 class WeatherStats:
     """
     A class to calculate statistics from weather data.
@@ -7,6 +8,7 @@ class WeatherStats:
         find_extremes(weather_data): Finds the highest temperature, lowest temperature, and most humid day.
         calculate_averages(weather_data): Calculates the average highest temperature, lowest temperature, and mean humidity.
     """
+
     @staticmethod
     def find_extremes(weather_data):
         """
@@ -16,37 +18,51 @@ class WeatherStats:
             weather_data (list): A list of WeatherData instances.
 
         Returns:
-            tuple: A tuple containing the highest temperature, highest temperature day,
+            tuple: A tuple containing the highest tem perature, highest temperature day,
                    lowest temperature, lowest temperature day, most humid day, and most humid day date.
         """
         extremes = {
-            "highest_temp": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None),
-            "lowest_temp": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None),
-            "most_humid": WeatherData(date="", max_temp=None, min_temp=None, mean_humidity=None)
+            "highest_temp": WeatherData(),
+            "lowest_temp": WeatherData(),
+            "most_humid": WeatherData(),
         }
 
         for data in weather_data:
-            if data.max_temp is not None:
-                if extremes["highest_temp"].max_temp is None or data.max_temp > extremes["highest_temp"].max_temp:
-                    extremes["highest_temp"] = data
+            if data.max_temp is not None and (
+                extremes["highest_temp"].max_temp is None
+                or data.max_temp > extremes["highest_temp"].max_temp
+            ):
+                extremes["highest_temp"] = data
 
-            if data.min_temp is not None:
-                if extremes["lowest_temp"].min_temp is None or data.min_temp < extremes["lowest_temp"].min_temp:
-                    extremes["lowest_temp"] = data
+            if data.min_temp is not None and (
+                extremes["lowest_temp"].min_temp is None
+                or data.min_temp < extremes["lowest_temp"].min_temp
+            ):
+                extremes["lowest_temp"] = data
 
-            if data.mean_humidity is not None:
-                if extremes["most_humid"].mean_humidity is None or data.mean_humidity > extremes["most_humid"].mean_humidity:
-                    extremes["most_humid"] = data
+            if data.mean_humidity is not None and (
+                extremes["most_humid"].mean_humidity is None
+                or data.mean_humidity > extremes["most_humid"].mean_humidity
+            ):
+                extremes["most_humid"] = data
+
+        highest_temp = extremes["highest_temp"].max_temp if extremes["highest_temp"].max_temp is not None else "No Data"
+        highest_temp_date = extremes["highest_temp"].date
+
+        lowest_temp = extremes["lowest_temp"].min_temp if extremes["lowest_temp"].min_temp is not None else "No Data"
+        lowest_temp_date = extremes["lowest_temp"].date
+
+        most_humid = extremes["most_humid"].mean_humidity if extremes["most_humid"].mean_humidity is not None else "No Data"
+        most_humid_date = extremes["most_humid"].date
 
         return (
-            extremes["highest_temp"].max_temp if extremes["highest_temp"].max_temp is not None else 'No Data',
-            extremes["highest_temp"].date,
-            extremes["lowest_temp"].min_temp if extremes["lowest_temp"].min_temp is not None else 'No Data',
-            extremes["lowest_temp"].date,
-            extremes["most_humid"].mean_humidity if extremes["most_humid"].mean_humidity is not None else 'No Data',
-            extremes["most_humid"].date
+            highest_temp,
+            highest_temp_date,
+            lowest_temp,
+            lowest_temp_date,
+            most_humid,
+            most_humid_date,
         )
-
 
     @staticmethod
     def calculate_averages(weather_data):
