@@ -82,7 +82,7 @@ class WeatherMan:
 
 def validate_year_month(value):
     """
-    Validates the format of the year/month input.
+    Validates the format of the year/month input using datetime.
 
     Parameters:
         value (str): The year/month string in the format "YYYY/MM".
@@ -93,29 +93,16 @@ def validate_year_month(value):
     Raises:
         argparse.ArgumentTypeError: If the input format or year/month is invalid.
     """
-    
     try:
-        # Split the input into year and month
-        parts = value.split("/")
-        if len(parts) != 2:
-            raise argparse.ArgumentTypeError(
-                "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
-            )
-
-        year, month = parts
-
-        # Validate year
-        datetime(int(year), 1, 1)  # This checks if the year is valid
-
-        # Validate month
-        datetime(int(year), int(month), 1)  # This checks if the month is valid
-
+        # Attempt to parse the input using the specific format "YYYY/MM"
+        datetime.strptime(value, "%Y/%m")
     except (ValueError, IndexError) as exc:
         raise argparse.ArgumentTypeError(
             "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
         ) from exc
-
+    
     return value
+
 
 
 def validate_year(value):
@@ -131,14 +118,15 @@ def validate_year(value):
     Raises:
         argparse.ArgumentTypeError: If the value is not a four-digit number or if it represents an invalid year.
     """
+
     try:
-        # Validate year
-        datetime(int(value), 1, 1)  # This checks if the year is valid
+        # Attempt to parse the input using the specific format "YYYY/MM"
+        datetime.strptime(value, "%Y")
     except (ValueError, IndexError) as exc:
         raise argparse.ArgumentTypeError(
-            "Year must be a four-digit number within the range 0001-9999."
+            "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
         ) from exc
-
+    
     return value
 
 
