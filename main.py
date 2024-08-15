@@ -8,12 +8,14 @@ from weather import WeatherData
 class WeatherMan:
     """
     A class to manage and process weather data for specific years or months.
+
     Attributes:
         file_reader (FileReader): An instance of FileReader for reading weather files.
     """
     def __init__(self, directory):
         """
         Initializes WeatherMan with the directory containing weather data files.
+
         Parameters:
             directory (str): The directory containing the weather data files.
         """
@@ -23,6 +25,7 @@ class WeatherMan:
         """
         Processes weather data for a specific year and prints the highest temperature,
         lowest temperature, and most humid day.
+
         Parameters:
             year (str): The year for which to display weather extremes.
         """
@@ -33,6 +36,8 @@ class WeatherMan:
             raw_data = self.file_reader.read_weather_file(file)
             for row in raw_data:
                 weather_data.append(WeatherData.from_csv_row(row))
+
+        # Filter out None values that might have been returned by from_csv_row
 
         weather_data = [data for data in weather_data if data is not None]
 
@@ -53,6 +58,7 @@ class WeatherMan:
         """
         Processes weather data for a specific month and prints the average highest temperature,
         average lowest temperature, and average mean humidity.
+
         Parameters:
             year (str): The year of the weather data.
             month (str): The month of the weather data.
@@ -120,12 +126,14 @@ def validate_year(value):
         ) from exc
     return value
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process weather data.")
     parser.add_argument(
         "directory", type=str, help="Directory containing weather files"
     )
     parser.add_argument(
+
         "-e", "--extremes", type=validate_year, nargs="+", help="Year(s) for which to display extremes"
     )
     parser.add_argument(
@@ -151,3 +159,4 @@ if __name__ == "__main__":
         for year_month in args.charts:
             year, month = year_month.split("/")
             weather_man.draw_bars(year, month)
+
