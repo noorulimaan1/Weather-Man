@@ -126,55 +126,6 @@ def validate_year(value):
         ) from exc
     return value
 
-def validate_year_month(value):
-    """
-    Validates the format of the year/month input using datetime.
-
-    Parameters:
-        value (str): The year/month string in the format "YYYY/MM".
-
-    Returns:
-        str: The validated year/month string.
-
-    Raises:
-        argparse.ArgumentTypeError: If the input format or year/month is invalid.
-    """
-    try:
-        # Attempt to parse the input using the specific format "YYYY/MM"
-        datetime.strptime(value, "%Y/%m")
-    except (ValueError, IndexError) as exc:
-        raise argparse.ArgumentTypeError(
-            "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
-        ) from exc
-    
-    return value
-
-
-
-def validate_year(value):
-    """
-    Validates that the input value is a valid year.
-
-    Parameters:
-        value (str): The year in the format "YYYY".
-
-    Returns:
-        str: The input value if it is valid.
-
-    Raises:
-        argparse.ArgumentTypeError: If the value is not a four-digit number or if it represents an invalid year.
-    """
-
-    try:
-        # Attempt to parse the input using the specific format "YYYY/MM"
-        datetime.strptime(value, "%Y")
-    except (ValueError, IndexError) as exc:
-        raise argparse.ArgumentTypeError(
-            "Year/Month must be in the format YYYY/MM with valid year (0001-9999) and month (01-12)."
-        ) from exc
-    
-    return value
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process weather data.")
