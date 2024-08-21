@@ -2,7 +2,6 @@ import argparse
 from datetime import datetime
 from file_reader import FileReader
 from stats import WeatherStats
-from weather import WeatherData
 
 
 class WeatherMan:
@@ -33,13 +32,7 @@ class WeatherMan:
         weather_data = []
 
         for file in files:
-            raw_data = self.file_reader.read_weather_file(file)
-            for row in raw_data:
-                weather_data.append(WeatherData.from_csv_row(row))
-
-        # Filter out None values that might have been returned by from_csv_row
-
-        weather_data = [data for data in weather_data if data is not None]
+                weather_data.extend(self.file_reader.read_weather_file(file))
 
         (
             highest_temp,
@@ -68,8 +61,7 @@ class WeatherMan:
             print(f"No data available for {year}/{month}")
             return
 
-        raw_data = self.file_reader.read_weather_file(file)
-        weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
+        weather_data = self.file_reader.read_weather_file(file)
 
         avg_high_temp, avg_low_temp, avg_mean_humidity = (
             WeatherStats.calculate_averages(weather_data)
@@ -80,13 +72,21 @@ class WeatherMan:
         print(f"Average Mean Humidity: {avg_mean_humidity}%")
 
     def draw_bars(self, year, month):
+        """
+        Draws horizontal bar charts for the highest and lowest temperatures for each day of the given month.
+
+        The highest temperatures are displayed in red and the lowest temperatures in blue.
+
+        Parameters:
+            year (str): The year for which to display the bar charts.
+            month (str): The month for which to display the bar charts.
+        """
         file = self.file_reader.get_file_for_month(year, month)
         if not file:
             print(f"No data available for {year}/{month}")
             return
         
-        raw_data = self.file_reader.read_weather_file(file)
-        weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
+        weather_data = self.file_reader.read_weather_file(file)
         
         WeatherStats.find_daily_extremes(weather_data)
 
@@ -133,30 +133,38 @@ if __name__ == "__main__":
         "directory", type=str, help="Directory containing weather files"
     )
     parser.add_argument(
-
-        "-e", "--extremes", type=validate_year, nargs="+", help="Year(s) for which to display extremes"
+        "-e",
+        "--extremes",
+        type=validate_year,
+        help="Year for which to display extremes",
     )
     parser.add_argument(
-        "-a", "--averages", type=validate_year_month, nargs="+", help="Year/Month(s) for which to display averages"
+        "-a",
+        "--averages",
+        type=validate_year_month,
+        help="Year/Month for which to display averages",
     )
     parser.add_argument(
-        "-c", "--charts", type=validate_year_month, nargs="+", help="Year/Month(s) for which to display temperature bars"
+        "-c",
+        "--charts",
+        type=validate_year_month,
+        help="Year/Month for which to display temperature bars",
     )
 
     args = parser.parse_args()
+
     weather_man = WeatherMan(args.directory)
 
     if args.extremes:
-        for year in args.extremes:
-            weather_man.process_annual_weather_extremes(year)
+        weather_man.process_annual_weather_extremes(args.extremes)
+    elif args.averages:
+        year, month = args.averages.split("/")
+        weather_man.process_monthly_weather_averages(year, month)
+    elif args.charts:
+        year, month = args.charts.split("/")
+        weather_man.draw_bars(year, month)
+    else:
+        parser.print_help()
 
-    if args.averages:
-        for year_month in args.averages:
-            year, month = year_month.split("/")
-            weather_man.process_monthly_weather_averages(year, month)
 
-    if args.charts:
-        for year_month in args.charts:
-            year, month = year_month.split("/")
-            weather_man.draw_bars(year, month)
 
