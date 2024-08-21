@@ -1,6 +1,8 @@
 import os
 import csv
 from constants import MONTH_NAME_MAPPING
+from weather import WeatherData
+
 
 class FileReader:
     """
@@ -34,7 +36,9 @@ class FileReader:
         with open(filepath, "r") as file:
             reader = csv.DictReader(file)  # Read the file into a dictionary format
             for row in reader:
-                weather_data.append(row)
+                data = WeatherData.from_csv_row(row)
+                if data is not None:
+                    weather_data.append(data)
         return weather_data
 
     def get_files_for_year(self, year):
