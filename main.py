@@ -1,5 +1,5 @@
 import sys
-
+from colorama import Fore, Back, Style
 from file_reader import FileReader
 from stats import WeatherStats
 from weather import WeatherData
@@ -57,7 +57,11 @@ class WeatherMan:
         raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
 
-        WeatherStats.find_daily_extremes(weather_data)
+        for data in weather_data:
+            if data.max_temp is not None and data.min_temp is not None:
+                print(
+                    f"{data.date} {Fore.BLUE + '+' * data.min_temp + Fore.RESET + Fore.RED + '+' * data.max_temp + Fore.RESET} {data.min_temp}C - {data.max_temp}C"
+                )
 
 
 if __name__ == "__main__":

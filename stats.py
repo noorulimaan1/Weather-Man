@@ -53,7 +53,6 @@ class WeatherStats:
     @staticmethod
     def find_daily_extremes(weather_data):
         for data in weather_data:
-            if data.max_temp is not None:
-                print(f"{data.date} {Fore.RED + '+' * data.max_temp + Fore.RESET} {data.max_temp}C")
-            if data.min_temp is not None:
-                print(f"{data.date} {Fore.BLUE + '+' * data.min_temp + Fore.RESET} {data.min_temp}C")
+            if data.max_temp is not None and data.min_temp is not None:
+                print(f"{data.date} {Fore.BLUE + '+' * data.min_temp + Fore.RESET + Fore.RED + '+' * data.max_temp + Fore.RESET} {data.min_temp}C - {data.max_temp}C")
+   
