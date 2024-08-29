@@ -1,5 +1,5 @@
 import sys
-from colorama import Fore, Back, Style
+from colorama import Fore
 from file_reader import FileReader
 from stats import WeatherStats
 from weather import WeatherData
@@ -40,9 +40,11 @@ class WeatherMan:
         raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
 
-        avg_high_temp, avg_low_temp, avg_mean_humidity = (
-            WeatherStats.calculate_averages(weather_data)
-        )
+        (
+            avg_high_temp,
+            avg_low_temp,
+            avg_mean_humidity
+        ) = WeatherStats.calculate_averages(weather_data)
 
         print(f"Average Highest Temperature: {avg_high_temp}C")
         print(f"Average Lowest Temperature: {avg_low_temp}C")
@@ -59,9 +61,17 @@ class WeatherMan:
 
         for data in weather_data:
             if data.max_temp is not None and data.min_temp is not None:
-                print(
-                    f"{data.date} {Fore.BLUE + '+' * data.min_temp + Fore.RESET + Fore.RED + '+' * data.max_temp + Fore.RESET} {data.min_temp}C - {data.max_temp}C"
-                )
+                # Print the date
+                print(data.date, end=" ")
+
+                # Print the minimum tempaerature bar in blue color
+                print(Fore.BLUE + "+" * data.min_temp + Fore.RESET, end=" ")
+
+                # Print the maximum tempaerature bar in red color
+                print(Fore.RED + "+" * data.max_temp + Fore.RESET, end=" ")
+
+                # Print the temperature values
+                print(f"{data.min_temp}C - {data.max_temp}C")
 
 
 if __name__ == "__main__":
@@ -76,15 +86,14 @@ if __name__ == "__main__":
         if option == "-e":
             year = sys.argv[i + 1]
             weather_man.process_year(year)
-            i += 2
         elif option == "-a":
             year, month = sys.argv[i + 1].split("/")
             weather_man.process_month(year, month)
-            i += 2
         elif option == "-c":
             year, month = sys.argv[i + 1].split("/")
             weather_man.draw_bars(year, month)
-            i += 2
         else:
             print("Invalid option")
             break
+
+        i += 2
