@@ -18,8 +18,14 @@ class WeatherMan:
             for row in raw_data:
                 weather_data.append(WeatherData.from_csv_row(row))
 
-        highest_temp, highest_temp_day, lowest_temp, lowest_temp_day, most_humid_day, most_humid_day_date = WeatherStats.find_extremes(
-            weather_data)
+        (
+            highest_temp,
+            highest_temp_day,
+            lowest_temp,
+            lowest_temp_day,
+            most_humid_day,
+            most_humid_day_date,
+        ) = WeatherStats.find_extremes(weather_data)
 
         print(f"Highest: {highest_temp}C on {highest_temp_day}")
         print(f"Lowest: {lowest_temp}C on {lowest_temp_day}")
@@ -34,8 +40,9 @@ class WeatherMan:
         raw_data = self.file_reader.read_weather_file(file)
         weather_data = [WeatherData.from_csv_row(row) for row in raw_data]
 
-        avg_high_temp, avg_low_temp, avg_mean_humidity = WeatherStats.calculate_averages(
-            weather_data)
+        avg_high_temp, avg_low_temp, avg_mean_humidity = (
+            WeatherStats.calculate_averages(weather_data)
+        )
 
         print(f"Average Highest Temperature: {avg_high_temp}C")
         print(f"Average Lowest Temperature: {avg_low_temp}C")
@@ -58,22 +65,22 @@ if __name__ == "__main__":
     weather_man = WeatherMan(directory)
 
     i = 2
-    
+
     while i < len(sys.argv):
         option = sys.argv[i]
 
         if option == "-e":
-            year = sys.argv[i+1]
+            year = sys.argv[i + 1]
             weather_man.process_year(year)
-            i+=2
+            i += 2
         elif option == "-a":
-            year, month = sys.argv[i+1].split('/')
+            year, month = sys.argv[i + 1].split("/")
             weather_man.process_month(year, month)
-            i+=2
+            i += 2
         elif option == "-c":
-            year, month = sys.argv[i+1].split('/')
+            year, month = sys.argv[i + 1].split("/")
             weather_man.draw_bars(year, month)
-            i+=2
+            i += 2
         else:
             print("Invalid option")
             break
